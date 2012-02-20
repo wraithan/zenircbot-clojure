@@ -1,0 +1,1 @@
+(ns zenircbot-clojure.core)

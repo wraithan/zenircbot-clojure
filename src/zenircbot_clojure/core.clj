@@ -6,6 +6,9 @@
 (def pub (redis/init))
 (def sub (redis/init))
 
+(def config (parse-string (slurp "../bot.json") true))
+(def server (first (config :servers)))
+
 (def bot-fnmap {:on-message (fn [{:keys [nick channel message irc]}]
                               (redis/publish pub "in" (generate-string
                                                        {:version 1
@@ -14,10 +17,10 @@
                                                                :channel channel
                                                                :sender nick}})))})
 
-(def bot (connect (create-irc {:name "ZenIRCBot-clojure"
-                               :server "irc.freenode.net"
+(def bot (connect (create-irc {:name (server :nick)
+                               :server (server :hostname)
                                :fnmap bot-fnmap})
-                  :channels ["#pdxbots"]))
+                  :channels (server :channels)))
 
 (redis/subscribe sub ["out"]
                  (fn [ch json-msg]

@@ -18,7 +18,27 @@
                                                         :type "privmsg"
                                                         :data {:message message
                                                                :channel channel
-                                                               :sender nick}})))})
+                                                               :sender nick}})))
+                :on-part (fn [{:keys [nick reason channel irc]}]
+                           (redis/publish pub "in" (generate-string
+                                                    {:version 1
+                                                     :type "part"
+                                                     :data {:reason reason
+                                                            :channel channel
+                                                            :sender nick}})))
+                :on-quit (fn [{:keys [nick reason irc]}]
+                           (redis/publish pub "in" (generate-string
+                                                    {:version 1
+                                                     :type "quit"
+                                                     :data {:reason reason
+                                                            :sender nick}})))
+                :on-action (fn [{:keys [nick message channel irc]}]
+                             (redis/publish pub "in" (generate-string
+                                                      {:version 1
+                                                       :type "action"
+                                                       :data {:nick nick
+                                                              :message message
+                                                              :channel channel}})))})
 
 (def bot (connect (create-irc {:name (server :nick)
                                :server (server :hostname)

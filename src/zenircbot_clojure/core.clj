@@ -23,15 +23,13 @@
                            (redis/publish pub "in" (generate-string
                                                     {:version 1
                                                      :type "part"
-                                                     :data {:reason reason
-                                                            :channel channel
+                                                     :data {:channel channel
                                                             :sender nick}})))
                 :on-quit (fn [{:keys [nick reason irc]}]
                            (redis/publish pub "in" (generate-string
                                                     {:version 1
                                                      :type "quit"
-                                                     :data {:reason reason
-                                                            :sender nick}})))
+                                                     :data {:sender nick}})))
                 :on-action (fn [{:keys [nick message channel irc]}]
                              (redis/publish pub "in" (generate-string
                                                       {:version 1

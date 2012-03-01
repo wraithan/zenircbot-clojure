@@ -35,9 +35,9 @@
                 :on-action (fn [{:keys [nick message channel irc]}]
                              (redis/publish pub "in" (generate-string
                                                       {:version 1
-                                                       :type "action"
+                                                       :type "privmsg"
                                                        :data {:nick nick
-                                                              :message message
+                                                              :message (str "\u0001ACTION" message "\u0001")
                                                               :channel channel}})))})
 
 (def bot (connect (create-irc {:name (server :nick)

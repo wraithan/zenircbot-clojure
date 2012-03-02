@@ -3,14 +3,17 @@
   (:use [irclj.core]
         [cheshire.core]))
 
+(def config (parse-string (slurp "../bot.json") true))
+(def server (first (config :servers)))
+(def redis-uri
+  (str "redis://" ((config :redis) :host)
+       ":" ((config :redis) :port)
+       "/" ((config :redis) :db)))
+
 ;; 2 redis connections are required because once you've used a
 ;; connection for sub you can no longer do anything else with it.
-(def pub (redis/init))
-(def sub (redis/init))
-
-(def config (parse-string (slurp "../bot.json") true))
-(def server (first (config :servers))) ; Only one server is supported
-                                       ; at this time.
+(def pub (redis/init {:url redis-uri}))
+(def sub (redis/init {:url redis-uri}))
 
 (def bot-fnmap {:on-message (fn [{:keys [nick channel message irc]}]
                               (redis/publish pub "in" (generate-string

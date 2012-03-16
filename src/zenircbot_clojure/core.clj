@@ -46,6 +46,8 @@
                                :fnmap bot-fnmap})
                   :channels (server :channels)))
 
+(redis/set "zenircbot:nick" (server :nick))
+
 (redis/subscribe sub ["out"]
                  (fn [ch json-msg]
                    (let [message (parse-string json-msg true)]

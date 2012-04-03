@@ -43,10 +43,11 @@
 
 (def bot (connect (create-irc {:name (server :nick)
                                :server (server :hostname)
+                               :port (server :port)
                                :fnmap bot-fnmap})
                   :channels (server :channels)))
 
-(redis/set "zenircbot:nick" (server :nick))
+(redis/set pub "zenircbot:nick" (server :nick))
 
 (redis/subscribe sub ["out"]
                  (fn [ch json-msg]
